@@ -138,6 +138,9 @@ export async function run(ctx) {
     await finishDoc();
     console.log('finished');
   }
-  await fs.writeFile(base + '.result.json', JSON.stringify({ engine: label, results }, null, 1));
+  const failed = results.filter(r => !r.ok);
+  const status = failed.length ? (results.some(r => r.ok) ? 'partial' : 'failed') : 'ok';
+  await fs.writeFile(base + '.result.json', JSON.stringify({ engine: label, status, results }, null, 1));
   await done();
+  if (failed.length) throw new Error(failed.map(r => '[' + r.i + '] ' + r.op + ': ' + r.error).join('; '));
 }

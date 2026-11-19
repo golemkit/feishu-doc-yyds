@@ -1,38 +1,61 @@
-# 谁懂啊😭 一句话让 Claude 写出大厂级飞书文档，领导以为我通宵了
+# feishu-doc · 让 AI 写出可编辑的飞书图文报告
 
-> 思维导图、彩色高亮块、四栏数据卡、架构图、时间线……全是飞书**原生可编辑**的，不是截图！
-> 打工人写周报、复盘、阶段总结直接起飞🚀
+把 Markdown 写进已登录的飞书编辑器：交付数字变成分栏卡片，Mermaid 变成画板，正文仍可继续编辑。无需飞书开放平台 API。
 
-`feishu-doc` 是一个 [Claude Code](https://claude.com/claude-code) skill。它不用飞书 API，直接操作网页上的飞书编辑器，用的是你自己的登录，所以你能编辑的文档它都能写。
+## 复制这段，让 AI 安装
 
-## 🔥 能干啥
+把下面整段发给 Claude Code、Codex 或具备本地终端工具的 DeepSeek Harness（dsh）：
 
-- ✍️ **一句话写整篇**：“按复盘模板，把这周的项目写进这篇飞书文档 <链接>”
-- 🧠 **原生思维导图 / 流程图 / 饼图 / 时间线 / 甘特图 / 时序图**：Mermaid 直接变成飞书画板，双击能放大，还能继续手动改
-- 🎨 **彩色高亮块随便配**：蓝 💡 结论、绿 ✅ 成果、红 🚨 风险、黄 🚀 机会……颜色和图标都能指定
-- 📊 **任意列数的分栏**：数据卡片、SWOT 四格、P0/P1/P2 待办、带彩色标签的对比栏
-- 🖍️ **彩色文字、背景高亮、彩色标签**：`{red:红字}`、`{bg-green:做得好的}`、`{{blue:标签}}`
-- 📖 **读文档、插内容、改字、删块**：改之前先读一遍，不会覆盖你手动改过的内容
-- 📋 **5 套模板**：阶段总结、项目复盘、会议纪要、周报、方案。结构和配色是从 13 个飞书官方模板里蒸馏出来的
-
-## 📦 安装（1 分钟）
-
-需要：Claude Code、Node.js 18+、Google Chrome（或 Edge / Chromium）
-
-```bash
-git clone https://github.com/golemkit/feishu-doc-yyds.git ~/.claude/skills/feishu-doc
+```text
+请为当前 agent 安装 https://github.com/golemkit/feishu-doc-yyds 的 feishu-doc skill（SKILL.md 在仓库根目录）。优先使用当前 harness 的 skill 安装器；没有安装器就将仓库放到此 harness 实际读取的 skills 目录下，目录名 feishu-doc。已有同名安装先检查来源与本地改动，不要直接覆盖。如果 dsh 未配置技能发现目录，可以保留独立 checkout 并告诉我以后如何显式引用 SKILL.md。检查 Node.js 18+、npm 和 Chrome/Edge/Chromium 是否可用，在安装目录按 package-lock.json 用 npm ci 安装依赖。报告实际安装路径、调用方法，以及是否需要新开会话。安装到此结束，不创建或修改飞书文档。
 ```
 
-Windows 放到 `C:\Users\你的用户名\.claude\skills\feishu-doc`。不用手动装依赖，第一次运行时会自动 `npm install`。它只装一个 playwright-core，不会另外下载浏览器。
+| Harness | 如何调用 | 验证情况 |
+| --- | --- | --- |
+| Claude Code | 有桌面终端且已安装 ego 时可用 ego；普通终端用 Chrome | 原开发环境；项目已记录两种引擎的 macOS 验证 |
+| Codex | 从安装目录运行 `bash scripts/run.sh /绝对路径/task.json --chrome` | 已在 macOS 写入并回读分栏卡片、表格和画板 |
+| DeepSeek Harness | 让有终端工具的会话读取安装目录中的 `SKILL.md`，显式传 `--chrome` | 桌面版已读技能并连接飞书；模型上游超时，完整写入尚未验收。headless 需要可用的模型凭据 |
 
-## 🚀 第一次使用
+**第一次写入：** 新建一份可编辑的空白飞书文档，复制链接，告诉 AI：「用 feishu-doc 把仓库的 `references/gallery/showcase.md` 写到这个链接，完成后回读，确认有一个三栏布局和三张画板。」按需在技能的独立 Chrome 窗口登录。
 
-1. 在飞书里新建一篇空白文档，复制链接
-2. 对 Claude Code 说：“用 feishu-doc 把下面的内容写进这篇飞书文档：<链接>”
-3. 会弹出一个**单独的** Chrome 窗口，用飞书 App 扫码登录一次（独立配置目录 `~/.feishu-doc-chrome`，不影响你平时的 Chrome）
-4. 之后就不用再登录了，这个窗口可以放后台
+## 图表样本册：一组需求，四种看法
 
-装了 ego 浏览器的话会优先用 ego，不用额外设置。
+![交付温度计：已交付六项、设计中四项、待验收两项](references/gallery/preview.svg)
+
+[复制整份飞书示例源码](references/gallery/showcase.md)。以下为同一组虚构数据的本地插图与 GitHub Mermaid 预览；飞书中的实际样式由编辑器决定。
+
+| 想回答的问题 | 推荐形式 | 读图提示 |
+| --- | --- | --- |
+| 做完了多少？ | 三栏数字卡 | 6 项已交付、4 项设计中、2 项待验收 |
+| 哪个状态占多数？ | 饼图 | 已交付占 12 项中的一半 |
+| 谁接下一棒？ | 带回路的流程图 | 评审通过进入验收；修改退回原型 |
+| 何时做了决定？ | 时间线 | 只放改变项目走向的节点 |
+
+```mermaid
+pie showData
+    title 12 项需求的去向
+    "已交付" : 6
+    "设计中" : 4
+    "待验收" : 2
+```
+
+```mermaid
+flowchart LR
+    A[绘制原型] --> B{设计评审}
+    B -->|通过| C[交付验收]
+    B -->|修改| A
+    C --> D[发布]
+    classDef stage fill:#dff7f0,stroke:#319981,color:#103f35
+    class A,C,D stage
+```
+
+```mermaid
+timeline
+    title 夜航计划 · 三个决策点
+    03 月 04 日 : 确定首批需求
+    03 月 11 日 : 完成原型评审
+    03 月 18 日 : 发布首批功能
+```
 
 ## 🎨 写法速查
 

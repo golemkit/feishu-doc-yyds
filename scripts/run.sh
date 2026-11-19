@@ -22,7 +22,7 @@ if [ "$ENGINE" = chrome ]; then
     (cd "$SKILL" && npm install --no-audit --no-fund >/dev/null 2>&1) || { echo "npm install failed in $SKILL" > "$OUT"; echo "EXIT 3" >> "$OUT"; echo "done $OUT"; exit 3; }
   fi
   node "$SKILL/scripts/run-chrome.mjs" "$T" > "$OUT" 2>&1
-  echo "EXIT $?" >> "$OUT"
+  rc=$?
 else
   J="$(mktemp /tmp/feishu-skill/job-XXXXXX).mjs"
   cat > "$J" <<JS
@@ -30,7 +30,9 @@ const R = await import("$SKILL/scripts/runner.mjs");
 await R.run({ taskFile: "$T", taskSpace, listTaskSpaces, claimTaskSpace, takeOverTaskSpace });
 JS
   "$EGO" nodejs < "$J" > "$OUT" 2>&1
-  echo "EXIT $?" >> "$OUT"
+  rc=$?
   rm -f "$J" "${J%.mjs}"
 fi
+echo "EXIT $rc" >> "$OUT"
 echo "done $OUT ($ENGINE)"
+exit "$rc"

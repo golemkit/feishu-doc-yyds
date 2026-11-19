@@ -16,9 +16,11 @@ There is no Feishu API access; this drives the real editor with the user's login
 
 ## How to run
 
+Use the directory containing this SKILL.md as SKILL_DIR. For Codex and DeepSeek Harness (dsh) pass --chrome explicitly. Claude Code can also use ego when its desktop terminal is available. See the [harness support table](README.md) and the [copyable chart gallery](references/gallery/showcase.md).
+
 1. Write a task JSON to `/tmp/feishu-skill/<name>.json` (ASCII path).
-2. Start it with `~/.claude/skills/feishu-doc/scripts/run.sh /tmp/feishu-skill/<name>.json`:
-   - **ego**: ego-browser fails from the Bash tool, so start it from `mcp__terminal__run_in_terminal` (the terminal rejects non-ASCII commands). Reuse the same tab for later jobs. Then, in the Bash tool, run `~/.claude/skills/feishu-doc/scripts/wait.sh /tmp/feishu-skill/<name>.json` (set timeout to 600000).
+2. Start it with `"$SKILL_DIR/scripts/run.sh" /tmp/feishu-skill/<name>.json --chrome`:
+   - **ego**: replace --chrome with --ego. ego-browser fails from the Bash tool, so start it from `mcp__terminal__run_in_terminal` (the terminal rejects non-ASCII commands). Reuse the same tab for later jobs. Then, in the Bash tool, run `"$SKILL_DIR/scripts/wait.sh" /tmp/feishu-skill/<name>.json` (set timeout to 600000).
    - **chrome**: run it straight from the Bash tool (timeout 600000). It prints `done …` when finished. If it may wait for a login, run it with `run_in_background` and then `wait.sh`.
 3. The log is `<name>.out`, one line per op: `[i] op ok …` or `FAILED: …`, ending with `EXIT n`.
 4. Results are in `<name>.result.json`, plus `<name>.tree.txt`, `<name>.outline.json` and screenshots, depending on the ops.
@@ -33,7 +35,7 @@ There is no Feishu API access; this drives the real editor with the user's login
 - Settings via env vars: `FEISHU_CHROME_PATH` (browser binary), `FEISHU_CHROME_PORT`, `FEISHU_CHROME_PROFILE`, `FEISHU_LOGIN_WAIT` (seconds) and `FEISHU_DEBUG=1`.
 - Without bash (Windows), run `node scripts/run-chrome.mjs <abs task.json>` from the skill folder, after `npm install`. Windows uses `End`, `Shift+Home` and `Control+z` instead of the Mac keys. This hasn't been tested on Windows yet.
 
-**Finding the doc:** when the user says they created or opened a doc, run `~/.claude/skills/feishu-doc/scripts/recent_docs.sh` in Bash. It lists recently visited Feishu doc URLs from the ego history and the feishu-doc Chrome profile. Otherwise, ask the user for the link.
+**Finding the doc:** when the user says they created or opened a doc, run `"$SKILL_DIR/scripts/recent_docs.sh"` in Bash. It lists recently visited Feishu doc URLs from the ego history and the feishu-doc Chrome profile. Otherwise, ask the user for the link.
 
 ## Task file
 
