@@ -1,0 +1,8 @@
+{
+  "url": "https://your-company.feishu.cn/wiki/REPLACE_WITH_NEW_EMPTY_DOC",
+  "ops": [
+    { "op": "write", "title": "示例 · 阶段总结", "markdownFile": "/tmp/feishu-skill/example.md" },
+    { "op": "shots" }
+  ],
+  "finish": true
+}

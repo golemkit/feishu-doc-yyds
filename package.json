@@ -1,0 +1,7 @@
+{
+  "name": "feishu-doc-skill",
+  "private": true,
+  "type": "module",
+  "description": "Chrome engine for the feishu-doc skill (the ego engine needs nothing extra)",
+  "dependencies": { "playwright-core": "^1.58.2" }
+}
