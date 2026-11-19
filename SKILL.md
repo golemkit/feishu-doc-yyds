@@ -174,6 +174,7 @@ What the templates use that this skill can't create (yet): AI 摘要 blocks, 同
 - Column widths can't be dragged by script; ask the user to adjust them.
 - Confirm with the user before deleting or rewriting content they wrote. Prefer `insert`, `edit` and `addAfter`.
 - Keep credentials, internal IPs and similar out of docs (documents get shared).
+- Feishu screenshots (`shots`, `screenshot`) carry a tiled watermark with the viewer's name and employee number. Use them only to check your own work. Never put them in a README, a public repo, a post or anything shared outside the company. For public images, draw a mock-up (HTML → headless Chrome) with made-up data.
 
 ## Extending
 
