@@ -180,8 +180,24 @@ export async function openDoc(T) {
   }
   await p.bringToFront();
   await p.setViewportSize({ width: 1500, height: 920 }).catch(() => {});
-  for (let i = 0; i < 20 && !(await editorReady(p)); i++) await p.waitForTimeout(500);
-  if (!(await editorReady(p))) {
+  // Tell apart: editor loaded / login page / doc deleted or not accessible / still loading.
+  const state = () => p.evaluate(() => {
+    if (document.querySelector('[data-block-type="page"]')) return 'ready';
+    const u = location.href, t = (document.body && document.body.innerText) || '';
+    if (/passport|accounts\/page\/login|suite\/login|\/login\b/i.test(u) || /扫码登录|登录飞书|Log in to (Feishu|Lark)|Scan to log in/i.test(t)) return 'login';
+    if (/该文档已被删除|文档已被删除|已被删除|has been deleted/i.test(t)) return 'deleted';
+    if (/没有(访问)?权限|无权限|申请(访问)?权限|You don.t have (access|permission)|Request access/i.test(t)) return 'no-access';
+    if (/页面不存在|文档不存在|链接已失效|Page not found|does not exist/i.test(t)) return 'not-found';
+    return 'loading';
+  }).catch(() => 'loading');
+  let st = 'loading';
+  for (let i = 0; i < 40 && (st = await state()) === 'loading'; i++) await p.waitForTimeout(500);
+  if (st === 'deleted' || st === 'no-access' || st === 'not-found') {
+    const msg = { deleted: 'the doc has been deleted (restore it from the Feishu trash, or use another link)', 'no-access': 'this account has no access to the doc (ask the owner to share it)', 'not-found': 'the doc link does not exist' }[st];
+    throw new Error(`DOC UNAVAILABLE: ${msg}: ${T.url}`);
+  }
+  if (st === 'loading') throw new Error(`Feishu editor did not load within 20 s (page title: ${await p.title()}): ${p.url()}`);
+  if (st === 'login') {
     console.log(`LOGIN NEEDED: log in to Feishu in the Chrome window that just opened (profile ${PROFILE}). Waiting up to ${LOGIN_WAIT_S}s...`);
     const until = Date.now() + LOGIN_WAIT_S * 1000;
     while (Date.now() < until) {
